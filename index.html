@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>随机密码生成器</title>
+    <title>SecurePassGen</title>
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/lucide@latest/icons/shield-check.svg" type="image/svg+xml">
     <style>
         * {
             margin: 0;
@@ -19,6 +20,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
         
         .container {
@@ -28,14 +31,46 @@
             padding: 40px;
             max-width: 600px;
             width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .logo svg {
+            width: 32px;
+            height: 32px;
+            stroke: white;
+            stroke-width: 2;
         }
         
         h1 {
-            text-align: center;
             color: #333;
-            margin-bottom: 30px;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 5px;
         }
         
         .form-group {
@@ -56,12 +91,13 @@
             border: 2px solid #ddd;
             border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         select:focus, input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .btn-container {
@@ -82,6 +118,23 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn-primary {
@@ -112,6 +165,11 @@
             margin-bottom: 20px;
             position: relative;
             min-height: 80px;
+            transition: all 0.3s ease;
+        }
+        
+        .password-display:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .password-text {
@@ -135,11 +193,12 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .copy-btn:hover {
             background: #218838;
+            transform: scale(1.05);
         }
         
         .strength-indicator {
@@ -148,6 +207,7 @@
             border-radius: 8px;
             text-align: center;
             font-weight: bold;
+            transition: all 0.3s ease;
         }
         
         .strength-weak {
@@ -166,11 +226,12 @@
         }
         
         .info-box {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             border-left: 4px solid #2196f3;
-            padding: 15px;
+            padding: 20px;
             margin-top: 20px;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .info-box h3 {
@@ -192,8 +253,23 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         .fade-in {
             animation: fadeIn 0.5s ease-out;
+        }
+        
+        .pulse {
+            animation: pulse 0.6s ease-in-out;
         }
         
         .toast {
@@ -207,6 +283,12 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             display: none;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
         }
         
         .history-section {
@@ -222,6 +304,7 @@
             border-radius: 10px;
             padding: 15px;
             margin-top: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
         }
         
         .history-item {
@@ -231,6 +314,12 @@
             padding: 8px 0;
             border-bottom: 1px solid #e9ecef;
             font-family: 'Courier New', monospace;
+            transition: background 0.3s ease;
+        }
+        
+        .history-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 5px;
         }
         
         .history-item:last-child {
@@ -251,16 +340,79 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
+            transition: all 0.3s ease;
         }
         
         .history-copy:hover {
             background: #138496;
+            transform: scale(1.05);
+        }
+        
+        /* 撒花效果 */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .confetti:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            border-radius: 50%;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .confetti-animation {
+            animation: confetti-fall 3s linear forwards;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔐 随机密码生成器</h1>
+        <div class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+            </div>
+            <h1>SecurePassGen</h1>
+            <div class="subtitle">专业级密码生成器</div>
+        </div>
         
         <div class="form-group">
             <label for="passwordType">密码类型：</label>
@@ -278,13 +430,19 @@
         </div>
         
         <div class="btn-container">
-            <button class="btn btn-primary" onclick="generatePassword()">生成密码</button>
-            <button class="btn btn-secondary" onclick="generateMultiple()">生成5个密码</button>
+            <button class="btn btn-primary" onclick="generatePassword()">
+                <span>🔐 生成密码</span>
+            </button>
+            <button class="btn btn-secondary" onclick="generateMultiple()">
+                <span>🎯 生成5个密码</span>
+            </button>
         </div>
         
         <div class="password-display" id="passwordDisplay">
             <div class="password-text" id="passwordText">点击"生成密码"按钮开始生成安全密码</div>
-            <button class="copy-btn" id="copyBtn" onclick="copyPassword()" style="display: none;">复制</button>
+            <button class="copy-btn" id="copyBtn" onclick="copyPassword()" style="display: none;">
+                📋 复制
+            </button>
         </div>
         
         <div class="strength-indicator" id="strengthIndicator" style="display: none;">
@@ -292,14 +450,14 @@
         </div>
         
         <div class="history-section">
-            <h3>历史记录（仅本会话）</h3>
+            <h3>📚 历史记录（仅本会话）</h3>
             <div class="history-list" id="historyList">
                 <div style="text-align: center; color: #666; font-style: italic;">暂无历史记录</div>
             </div>
         </div>
         
         <div class="info-box">
-            <h3>密码类型说明：</h3>
+            <h3>🔍 密码类型说明：</h3>
             <ul>
                 <li><strong>基于单词</strong>：使用常见单词组合，添加数字和符号，相对容易记忆</li>
                 <li><strong>规律模式</strong>：按照大写字母、小写字母、数字、符号的规律生成</li>
@@ -309,9 +467,42 @@
         </div>
     </div>
     
-    <div class="toast" id="toast">密码已复制到剪贴板！</div>
+    <div class="toast" id="toast">
+        ✅ 密码已复制到剪贴板！
+    </div>
     
     <script>
+        // 撒花效果类
+        class ConfettiEffect {
+            constructor() {
+                this.colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7', '#a29bfe'];
+            }
+            
+            createConfetti() {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti confetti-animation';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+            
+            celebrate() {
+                // 创建多个撒花
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        this.createConfetti();
+                    }, Math.random() * 1000);
+                }
+            }
+        }
+        
         // 密码生成器类
         class PasswordGenerator {
             constructor() {
@@ -519,17 +710,18 @@
                 
                 // 返回强度等级
                 if (score <= 3) {
-                    return {class: "strength-weak", text: "弱密码 - 建议增加长度或复杂度"};
+                    return {class: "strength-weak", text: "🔴 弱密码 - 建议增加长度或复杂度"};
                 } else if (score <= 5) {
-                    return {class: "strength-medium", text: "中等强度 - 适合一般用途"};
+                    return {class: "strength-medium", text: "🟡 中等强度 - 适合一般用途"};
                 } else {
-                    return {class: "strength-strong", text: "强密码 - 安全性良好"};
+                    return {class: "strength-strong", text: "🟢 强密码 - 安全性良好"};
                 }
             }
         }
         
-        // 创建全局密码生成器实例
+        // 创建全局实例
         const generator = new PasswordGenerator();
+        const confetti = new ConfettiEffect();
         
         function generatePassword() {
             const passwordType = document.getElementById('passwordType').value;
@@ -550,10 +742,15 @@
             strengthText.textContent = strength.text;
             
             // 添加动画效果
-            document.getElementById('passwordDisplay').classList.add('fade-in');
+            const passwordDisplay = document.getElementById('passwordDisplay');
+            passwordDisplay.classList.add('fade-in', 'pulse');
+            
             setTimeout(() => {
-                document.getElementById('passwordDisplay').classList.remove('fade-in');
-            }, 500);
+                passwordDisplay.classList.remove('fade-in', 'pulse');
+            }, 600);
+            
+            // 触发撒花效果
+            confetti.celebrate();
         }
         
         function generateMultiple() {
@@ -573,10 +770,15 @@
             document.getElementById('strengthIndicator').style.display = 'none';
             
             // 添加动画效果
-            document.getElementById('passwordDisplay').classList.add('fade-in');
+            const passwordDisplay = document.getElementById('passwordDisplay');
+            passwordDisplay.classList.add('fade-in', 'pulse');
+            
             setTimeout(() => {
-                document.getElementById('passwordDisplay').classList.remove('fade-in');
-            }, 500);
+                passwordDisplay.classList.remove('fade-in', 'pulse');
+            }, 600);
+            
+            // 触发撒花效果
+            confetti.celebrate();
         }
         
         function copyPassword() {
@@ -604,8 +806,13 @@
         function showToast() {
             const toast = document.getElementById('toast');
             toast.style.display = 'block';
+            toast.classList.add('show');
+            
             setTimeout(() => {
-                toast.style.display = 'none';
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
             }, 2000);
         }
         
