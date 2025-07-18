@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机密码生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .password-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 80px;
+        }
+        
+        .password-text {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            word-break: break-all;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .strength-indicator {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .strength-weak {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .strength-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .strength-strong {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .history-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-password {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .history-copy {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .history-copy:hover {
+            background: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 随机密码生成器</h1>
+        
+        <div class="form-group">
+            <label for="passwordType">密码类型：</label>
+            <select id="passwordType">
+                <option value="word">基于单词（易记忆）</option>
+                <option value="pattern">规律模式（中等复杂度）</option>
+                <option value="pronounceable">可发音（相对易记）</option>
+                <option value="random">完全随机（高强度）</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="passwordLength">密码长度：</label>
+            <input type="number" id="passwordLength" min="8" max="50" value="12">
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn btn-primary" onclick="generatePassword()">生成密码</button>
+            <button class="btn btn-secondary" onclick="generateMultiple()">生成5个密码</button>
+        </div>
+        
+        <div class="password-display" id="passwordDisplay">
+            <div class="password-text" id="passwordText">点击"生成密码"按钮开始生成安全密码</div>
+            <button class="copy-btn" id="copyBtn" onclick="copyPassword()" style="display: none;">复制</button>
+        </div>
+        
+        <div class="strength-indicator" id="strengthIndicator" style="display: none;">
+            <span id="strengthText"></span>
+        </div>
+        
+        <div class="history-section">
+            <h3>历史记录（仅本会话）</h3>
+            <div class="history-list" id="historyList">
+                <div style="text-align: center; color: #666; font-style: italic;">暂无历史记录</div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>密码类型说明：</h3>
+            <ul>
+                <li><strong>基于单词</strong>：使用常见单词组合，添加数字和符号，相对容易记忆</li>
+                <li><strong>规律模式</strong>：按照大写字母、小写字母、数字、符号的规律生成</li>
+                <li><strong>可发音</strong>：采用辅音-元音模式，相对容易发音和记忆</li>
+                <li><strong>完全随机</strong>：最高安全性，包含所有字符类型的随机组合</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">密码已复制到剪贴板！</div>
+    
+    <script>
+        // 密码生成器类
+        class PasswordGenerator {
+            constructor() {
+                this.words = [
+                    'Apple', 'Banana', 'Cherry', 'Dragon', 'Eagle', 'Fire', 'Gold', 'Happy',
+                    'Island', 'Jazz', 'King', 'Light', 'Magic', 'Night', 'Ocean', 'Peace',
+                    'Quick', 'River', 'Star', 'Tiger', 'Unity', 'Victory', 'Water', 'Xenon',
+                    'Yellow', 'Zero', 'Brave', 'Cloud', 'Dream', 'Energy', 'Forest', 'Grace',
+                    'Heart', 'Ice', 'Jump', 'Kind', 'Love', 'Moon', 'Noble', 'Orange',
+                    'Power', 'Queen', 'Rain', 'Sun', 'Thunder', 'Ultra', 'Voice', 'Wind'
+                ];
+                
+                this.numbers = '0123456789';
+                this.symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                this.lowercase = 'abcdefghijklmnopqrstuvwxyz';
+                this.uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                this.history = [];
+            }
+            
+            // 安全的随机数生成
+            getRandomInt(max) {
+                return Math.floor(Math.random() * max);
+            }
+            
+            getRandomChoice(array) {
+                return array[this.getRandomInt(array.length)];
+            }
+            
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = this.getRandomInt(i + 1);
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+            
+            generateWordBasedPassword(length = 12) {
+                // 选择2个随机单词
+                const word1 = this.getRandomChoice(this.words);
+                const word2 = this.getRandomChoice(this.words);
+                
+                // 随机数字
+                const numbers = Array.from({length: 2}, () => this.getRandomChoice(this.numbers)).join('');
+                
+                // 随机符号
+                const symbols = Array.from({length: 2}, () => this.getRandomChoice(this.symbols)).join('');
+                
+                // 组合并打乱
+                let password = word1 + word2 + numbers + symbols;
+                
+                // 调整长度
+                if (password.length < length) {
+                    const additional = this.lowercase + this.uppercase + this.numbers;
+                    while (password.length < length) {
+                        password += this.getRandomChoice(additional);
+                    }
+                }
+                
+                if (password.length > length) {
+                    password = password.substring(0, length);
+                }
+                
+                return password;
+            }
+            
+            generatePatternPassword(length = 12) {
+                if (length < 8) length = 8;
+                
+                const password = [];
+                
+                // 确保包含各种字符类型
+                password.push(...Array.from({length: 2}, () => this.getRandomChoice(this.uppercase)));
+                password.push(...Array.from({length: 2}, () => this.getRandomChoice(this.lowercase)));
+                password.push(...Array.from({length: 2}, () => this.getRandomChoice(this.numbers)));
+                password.push(...Array.from({length: 2}, () => this.getRandomChoice(this.symbols)));
+                
+                // 填充剩余长度
+                const allChars = this.uppercase + this.lowercase + this.numbers + this.symbols;
+                while (password.length < length) {
+                    password.push(this.getRandomChoice(allChars));
+                }
+                
+                return this.shuffleArray(password).join('');
+            }
+            
+            generatePronounceablePassword(length = 12) {
+                const consonants = 'bcdfghjklmnpqrstvwxyz';
+                const vowels = 'aeiou';
+                
+                let password = '';
+                
+                // 创建辅音-元音模式
+                for (let i = 0; i < Math.floor(length / 2); i++) {
+                    password += this.getRandomChoice(consonants);
+                    password += this.getRandomChoice(vowels);
+                }
+                
+                // 转换为数组以便修改
+                const passwordArray = password.split('');
+                
+                // 随机位置插入数字和符号
+                const positions = [];
+                for (let i = 0; i < passwordArray.length; i++) {
+                    positions.push(i);
+                }
+                
+                // 随机选择位置
+                const selectedPositions = this.shuffleArray(positions).slice(0, Math.min(4, passwordArray.length));
+                
+                // 插入数字和符号
+                for (let i = 0; i < Math.min(2, selectedPositions.length); i++) {
+                    passwordArray[selectedPositions[i]] = this.getRandomChoice(this.numbers);
+                }
+                
+                for (let i = 2; i < Math.min(4, selectedPositions.length); i++) {
+                    passwordArray[selectedPositions[i]] = this.getRandomChoice(this.symbols);
+                }
+                
+                // 随机大写一些字母
+                for (let i = 0; i < passwordArray.length; i++) {
+                    if (/[a-z]/.test(passwordArray[i]) && this.getRandomInt(3) === 0) {
+                        passwordArray[i] = passwordArray[i].toUpperCase();
+                    }
+                }
+                
+                let result = passwordArray.join('');
+                
+                // 确保长度
+                if (result.length < length) {
+                    const additional = this.numbers + this.symbols;
+                    while (result.length < length) {
+                        result += this.getRandomChoice(additional);
+                    }
+                }
+                
+                return result.substring(0, length);
+            }
+            
+            generateRandomPassword(length = 12) {
+                const allChars = this.uppercase + this.lowercase + this.numbers + this.symbols;
+                return Array.from({length}, () => this.getRandomChoice(allChars)).join('');
+            }
+            
+            generatePassword(type, length) {
+                let password;
+                
+                switch (type) {
+                    case 'word':
+                        password = this.generateWordBasedPassword(length);
+                        break;
+                    case 'pattern':
+                        password = this.generatePatternPassword(length);
+                        break;
+                    case 'pronounceable':
+                        password = this.generatePronounceablePassword(length);
+                        break;
+                    default:
+                        password = this.generateRandomPassword(length);
+                }
+                
+                // 添加到历史记录
+                this.addToHistory(password);
+                
+                return password;
+            }
+            
+            addToHistory(password) {
+                this.history.unshift(password);
+                if (this.history.length > 10) {
+                    this.history.pop();
+                }
+                this.updateHistoryDisplay();
+            }
+            
+            updateHistoryDisplay() {
+                const historyList = document.getElementById('historyList');
+                
+                if (this.history.length === 0) {
+                    historyList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic;">暂无历史记录</div>';
+                    return;
+                }
+                
+                historyList.innerHTML = this.history.map((password, index) => `
+                    <div class="history-item">
+                        <span class="history-password">${password}</span>
+                        <button class="history-copy" onclick="copyToClipboard('${password}')">复制</button>
+                    </div>
+                `).join('');
+            }
+            
+            calculateStrength(password) {
+                let score = 0;
+                
+                // 长度评分
+                if (password.length >= 8) score += 1;
+                if (password.length >= 12) score += 1;
+                if (password.length >= 16) score += 1;
+                
+                // 字符类型评分
+                if (/[a-z]/.test(password)) score += 1;
+                if (/[A-Z]/.test(password)) score += 1;
+                if (/[0-9]/.test(password)) score += 1;
+                if (/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) score += 1;
+                
+                // 返回强度等级
+                if (score <= 3) {
+                    return {class: "strength-weak", text: "弱密码 - 建议增加长度或复杂度"};
+                } else if (score <= 5) {
+                    return {class: "strength-medium", text: "中等强度 - 适合一般用途"};
+                } else {
+                    return {class: "strength-strong", text: "强密码 - 安全性良好"};
+                }
+            }
+        }
+        
+        // 创建全局密码生成器实例
+        const generator = new PasswordGenerator();
+        
+        function generatePassword() {
+            const passwordType = document.getElementById('passwordType').value;
+            const passwordLength = parseInt(document.getElementById('passwordLength').value);
+            
+            const password = generator.generatePassword(passwordType, passwordLength);
+            const strength = generator.calculateStrength(password);
+            
+            document.getElementById('passwordText').textContent = password;
+            document.getElementById('copyBtn').style.display = 'block';
+            
+            // 显示密码强度
+            const strengthIndicator = document.getElementById('strengthIndicator');
+            const strengthText = document.getElementById('strengthText');
+            
+            strengthIndicator.style.display = 'block';
+            strengthIndicator.className = 'strength-indicator ' + strength.class;
+            strengthText.textContent = strength.text;
+            
+            // 添加动画效果
+            document.getElementById('passwordDisplay').classList.add('fade-in');
+            setTimeout(() => {
+                document.getElementById('passwordDisplay').classList.remove('fade-in');
+            }, 500);
+        }
+        
+        function generateMultiple() {
+            const passwordType = document.getElementById('passwordType').value;
+            const passwordLength = parseInt(document.getElementById('passwordLength').value);
+            
+            const passwords = [];
+            for (let i = 0; i < 5; i++) {
+                passwords.push(generator.generatePassword(passwordType, passwordLength));
+            }
+            
+            const passwordText = passwords.join('\n\n');
+            document.getElementById('passwordText').textContent = passwordText;
+            document.getElementById('copyBtn').style.display = 'block';
+            
+            // 隐藏强度指示器（多个密码时）
+            document.getElementById('strengthIndicator').style.display = 'none';
+            
+            // 添加动画效果
+            document.getElementById('passwordDisplay').classList.add('fade-in');
+            setTimeout(() => {
+                document.getElementById('passwordDisplay').classList.remove('fade-in');
+            }, 500);
+        }
+        
+        function copyPassword() {
+            const passwordText = document.getElementById('passwordText').textContent;
+            copyToClipboard(passwordText);
+        }
+        
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast();
+                });
+            } else {
+                // 备用方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast();
+            }
+        }
+        
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2000);
+        }
+        
+        // 页面加载时生成一个默认密码
+        window.onload = function() {
+            generatePassword();
+        };
+    </script>
+</body>
+</html>
