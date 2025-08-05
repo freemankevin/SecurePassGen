@@ -14,8 +14,10 @@
             box-sizing: border-box;
         }
         
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Source+Code+Pro:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+        
         body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Noto Serif SC', serif;
             background: radial-gradient(ellipse at top, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
             min-height: 100vh;
             display: flex;
@@ -68,24 +70,52 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
-            padding: 48px;
-            max-width: 700px;
+            border-radius: 32px;
+            box-shadow: 
+                0 32px 64px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            padding: 60px;
+            max-width: 800px;
             width: 100%;
             position: relative;
             z-index: 10;
             transition: all 0.3s ease;
         }
         
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 32px;
+            z-index: -1;
+        }
+        
         .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 
+                0 48px 100px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
         }
         
         .logo {
@@ -152,7 +182,20 @@
         }
         
         .form-group {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .form-group::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 2px;
+            opacity: 0.6;
         }
         
         label {
@@ -166,18 +209,23 @@
         
         select, input {
             width: 100%;
-            padding: 16px 20px;
+            padding: 20px 24px;
+            margin-left: 15px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 16px;
+            font-weight: 500;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             color: white;
             transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: calc(100% - 15px);
         }
         
         select::placeholder, input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
         }
         
         select:focus, input:focus {
@@ -190,28 +238,54 @@
         select option {
             background: #2a5298;
             color: white;
+            font-weight: 500;
+        }
+        
+        /* 确保数字输入框能正常工作 */
+        input[type="number"] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         .btn-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 25px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .btn-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 60%;
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.3), transparent);
         }
         
         .btn {
-            padding: 18px 30px;
+            padding: 22px 35px;
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            font-family: 'Noto Serif SC', serif;
         }
         
         .btn::before {
@@ -248,11 +322,11 @@
             background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
             position: relative;
-            min-height: 120px;
+            min-height: 140px;
             transition: all 0.3s ease;
             overflow: hidden;
         }
@@ -265,10 +339,19 @@
             right: -2px;
             bottom: -2px;
             background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-            border-radius: 20px;
+            border-radius: 24px;
             z-index: -1;
             opacity: 0;
             transition: opacity 0.3s ease;
+        }
+        
+        .password-display::after {
+            content: '🔐';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 20px;
+            opacity: 0.6;
         }
         
         .password-display:hover::before {
@@ -281,14 +364,15 @@
         }
         
         .password-text {
-            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-            font-size: 20px;
-            font-weight: bold;
+            font-family: 'Source Code Pro', 'DM Mono', 'Noto Serif SC', monospace;
+            font-size: 22px;
+            font-weight: 600;
             color: white;
             word-break: break-all;
-            line-height: 1.6;
+            line-height: 1.7;
             white-space: pre-wrap;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            letter-spacing: 1px;
         }
         
         .copy-btn {
@@ -345,22 +429,35 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 30px;
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 40px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .info-box::before {
+            content: '💡';
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 24px;
+            opacity: 0.7;
         }
         
         .info-box h3 {
             color: white;
             margin-bottom: 16px;
             font-size: 1.3em;
+            font-weight: 600;
+            letter-spacing: 0.01em;
         }
         
         .info-box ul {
             margin-left: 20px;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             line-height: 1.8;
+            font-weight: 400;
         }
         
         .info-box li {
@@ -368,7 +465,8 @@
         }
         
         .info-box strong {
-            color: #667eea;
+            color: #a8d8ff;
+            font-weight: 600;
         }
         
         .history-section {
@@ -488,20 +586,42 @@
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
-                padding: 30px 20px;
-                margin: 10px;
+                padding: 40px 25px;
+                margin: 15px;
+                border-radius: 24px;
             }
             
             h1 {
-                font-size: 2.2em;
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1.1em;
             }
             
             .btn-container {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn-container::before {
+                display: none;
             }
             
             .password-text {
-                font-size: 16px;
+                font-size: 18px;
+            }
+            
+            .form-group::before {
+                display: none;
+            }
+            
+            label, select, input {
+                margin-left: 0;
+            }
+            
+            select, input {
+                width: 100%;
             }
         }
         
@@ -1129,13 +1249,35 @@
             }
         });
         
-        // 长度输入验证
+        // 长度输入验证和处理
         document.getElementById('passwordLength').addEventListener('input', function(e) {
-            const value = parseInt(e.target.value);
+            let value = parseInt(e.target.value) || 8;
             if (value < 8) {
-                e.target.value = 8;
+                value = 8;
             } else if (value > 64) {
-                e.target.value = 64;
+                value = 64;
+            }
+            e.target.value = value;
+        });
+        
+        // 确保输入框支持手动输入
+        document.getElementById('passwordLength').addEventListener('keydown', function(e) {
+            // 允许数字、退格、删除、箭头键、Tab键
+            const allowedKeys = [8, 9, 37, 38, 39, 40, 46];
+            const isNumber = (e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105);
+            
+            if (!isNumber && !allowedKeys.includes(e.keyCode) && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+            }
+        });
+        
+        // 处理粘贴事件
+        document.getElementById('passwordLength').addEventListener('paste', function(e) {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            const value = parseInt(paste);
+            if (!isNaN(value)) {
+                this.value = Math.min(Math.max(value, 8), 64);
             }
         });
     </script>
