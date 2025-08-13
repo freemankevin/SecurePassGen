@@ -8,6 +8,46 @@
     <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'/%3E%3C/svg%3E">
     <style>
+        :root {
+            /* 亮色模式变量 */
+            --bg-gradient-start: #1e3c72;
+            --bg-gradient-mid: #2a5298;
+            --bg-gradient-end: #1e3c72;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --container-border: rgba(255, 255, 255, 0.2);
+            --text-primary: white;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --input-border: rgba(255, 255, 255, 0.2);
+            --input-focus-border: #667eea;
+            --particle-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient-primary: linear-gradient(135deg, #667eea, #764ba2);
+            --gradient-secondary: linear-gradient(135deg, #f093fb, #f5576c);
+            --password-display-bg: rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] {
+            /* 暗色模式变量 */
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-mid: #1e293b;
+            --bg-gradient-end: #334155;
+            --container-bg: rgba(30, 41, 59, 0.8);
+            --container-border: rgba(71, 85, 105, 0.3);
+            --text-primary: #f1f5f9;
+            --text-secondary: rgba(241, 245, 249, 0.8);
+            --text-muted: rgba(241, 245, 249, 0.6);
+            --input-bg: rgba(30, 41, 59, 0.6);
+            --input-border: rgba(71, 85, 105, 0.4);
+            --input-focus-border: #8b5cf6;
+            --particle-color: rgba(139, 92, 246, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --gradient-primary: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            --gradient-secondary: linear-gradient(135deg, #ec4899, #f59e0b);
+            --password-display-bg: rgba(15, 23, 42, 0.6);
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +58,7 @@
         
         body {
             font-family: 'Noto Serif SC', serif;
-            background: radial-gradient(ellipse at top, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            background: radial-gradient(ellipse at top, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -26,6 +66,75 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        /* 顶部工具栏 */
+        .top-toolbar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .theme-toggle, .github-link {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--container-border);
+            border-radius: 50%;
+            background: var(--container-bg);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 25px var(--shadow-color);
+        }
+        
+        .theme-toggle:hover, .github-link:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 12px 35px var(--shadow-color);
+            border-color: var(--input-focus-border);
+        }
+        
+        .theme-toggle svg, .github-link svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover svg, .github-link:hover svg {
+            transform: rotate(15deg);
+        }
+        
+        /* 底部GitHub链接（备选位置） */
+        .bottom-github {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none; /* 默认隐藏，可以通过JS控制显示 */
+        }
+        
+        .bottom-github .github-link {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: var(--gradient-primary);
+            border: none;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .bottom-github .github-link svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
         }
         
         /* 背景动画粒子 */
@@ -44,7 +153,7 @@
             position: absolute;
             width: 3px;
             height: 3px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--particle-color);
             border-radius: 50%;
             animation: float-particle 15s infinite linear;
         }
@@ -67,13 +176,13 @@
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--container-bg);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--container-border);
             border-radius: 32px;
             box-shadow: 
-                0 32px 64px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 32px 64px var(--shadow-color),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             padding: 60px;
             max-width: 800px;
             width: 100%;
@@ -89,7 +198,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
             border-radius: 32px;
             z-index: -1;
         }
@@ -97,8 +206,8 @@
         .container:hover {
             transform: translateY(-8px);
             box-shadow: 
-                0 48px 100px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                0 48px 100px var(--shadow-color),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
         
         .header {
@@ -115,14 +224,14 @@
             transform: translateX(-50%);
             width: 100px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         }
         
         .logo {
             width: 80px;
             height: 80px;
             margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background: var(--gradient-primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -163,19 +272,19 @@
         }
         
         h1 {
-            color: white;
+            color: var(--text-primary);
             font-size: 3em;
             font-weight: 700;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 4px 20px var(--shadow-color);
             margin: 0;
-            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .subtitle {
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-secondary);
             font-size: 1.2em;
             margin-top: 8px;
             font-weight: 300;
@@ -193,7 +302,7 @@
             top: 0;
             width: 4px;
             height: 100%;
-            background: linear-gradient(180deg, #667eea, #764ba2);
+            background: var(--gradient-primary);
             border-radius: 2px;
             opacity: 0.6;
         }
@@ -202,42 +311,41 @@
             display: block;
             margin-bottom: 12px;
             font-weight: 600;
-            color: white;
+            color: var(--text-primary);
             font-size: 1.1em;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px var(--shadow-color);
         }
         
         select, input {
-            width: 100%;
+            width: calc(100% - 15px);
             padding: 20px 24px;
             margin-left: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid var(--input-border);
             border-radius: 20px;
             font-size: 16px;
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
             backdrop-filter: blur(10px);
-            color: white;
+            color: var(--text-primary);
             transition: all 0.3s ease;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: calc(100% - 15px);
         }
         
         select::placeholder, input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-muted);
             font-weight: 400;
         }
         
         select:focus, input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--input-focus-border);
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--input-bg);
         }
         
         select option {
-            background: #2a5298;
-            color: white;
+            background: var(--bg-gradient-mid);
+            color: var(--text-primary);
             font-weight: 500;
         }
         
@@ -269,7 +377,7 @@
             transform: translate(-50%, -50%);
             width: 2px;
             height: 60%;
-            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.2), transparent);
         }
         
         .btn {
@@ -284,7 +392,7 @@
             letter-spacing: 1.2px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 12px 40px var(--shadow-color);
             font-family: 'Noto Serif SC', serif;
         }
         
@@ -305,23 +413,23 @@
         
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 16px 48px var(--shadow-color);
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: var(--gradient-primary);
             color: white;
         }
         
         .btn-secondary {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+            background: var(--gradient-secondary);
             color: white;
         }
         
         .password-display {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--password-display-bg);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--input-border);
             border-radius: 24px;
             padding: 40px;
             margin-bottom: 40px;
@@ -338,7 +446,7 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background: var(--gradient-primary);
             border-radius: 24px;
             z-index: -1;
             opacity: 0;
@@ -360,18 +468,18 @@
         
         .password-display:hover {
             transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px var(--shadow-color);
         }
         
         .password-text {
             font-family: 'Source Code Pro', 'DM Mono', 'Noto Serif SC', monospace;
             font-size: 22px;
             font-weight: 600;
-            color: white;
+            color: var(--text-primary);
             word-break: break-all;
             line-height: 1.7;
             white-space: pre-wrap;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 2px 8px var(--shadow-color);
             letter-spacing: 1px;
         }
         
@@ -426,13 +534,13 @@
         }
         
         .info-box {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--container-bg);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid var(--container-border);
             border-radius: 24px;
             padding: 40px;
             margin-top: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px var(--shadow-color);
             position: relative;
         }
         
@@ -446,7 +554,7 @@
         }
         
         .info-box h3 {
-            color: white;
+            color: var(--text-primary);
             margin-bottom: 16px;
             font-size: 1.3em;
             font-weight: 600;
@@ -455,7 +563,7 @@
         
         .info-box ul {
             margin-left: 20px;
-            color: rgba(255, 255, 255, 0.95);
+            color: var(--text-secondary);
             line-height: 1.8;
             font-weight: 400;
         }
@@ -472,11 +580,11 @@
         .history-section {
             margin-top: 40px;
             padding-top: 30px;
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid var(--container-border);
         }
         
         .history-section h3 {
-            color: white;
+            color: var(--text-primary);
             margin-bottom: 16px;
             font-size: 1.3em;
         }
@@ -484,12 +592,12 @@
         .history-list {
             max-height: 250px;
             overflow-y: auto;
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--password-display-bg);
             backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 20px;
             margin-top: 16px;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 4px 8px var(--shadow-color);
         }
         
         .history-item {
@@ -497,14 +605,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            border-bottom: 1px solid var(--container-border);
+            font-family: 'Source Code Pro', 'Courier New', monospace;
             transition: all 0.3s ease;
             border-radius: 8px;
         }
         
         .history-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
             padding-left: 16px;
             padding-right: 16px;
         }
@@ -516,11 +624,11 @@
         .history-password {
             flex: 1;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-secondary);
         }
         
         .history-copy {
-            background: linear-gradient(135degree, #17a2b8, #138496);
+            background: linear-gradient(135deg, #17a2b8, #138496);
             color: white;
             border: none;
             padding: 8px 16px;
@@ -585,6 +693,22 @@
         
         /* 响应式设计 */
         @media (max-width: 768px) {
+            .top-toolbar {
+                top: 15px;
+                right: 15px;
+                gap: 10px;
+            }
+            
+            .theme-toggle, .github-link {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .theme-toggle svg, .github-link svg {
+                width: 20px;
+                height: 20px;
+            }
+            
             .container {
                 padding: 40px 25px;
                 margin: 15px;
@@ -653,9 +777,40 @@
         .pulse-glow {
             animation: pulse-glow 1s ease-in-out;
         }
+
+        /* 主题切换动画 */
+        * {
+            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+        }
     </style>
 </head>
-<body>
+<body data-theme="light">
+    <!-- 顶部工具栏 -->
+    <div class="top-toolbar">
+        <button class="theme-toggle" id="themeToggle" title="切换主题模式">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.591zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.591 1.591zM12 21.75a.75.75 0 01-.75-.75v-2.25a.75.75 0 011.5 0V21a.75.75 0 01-.75.75zM5.106 17.834a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.061l-1.591 1.591zM2.25 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3a.75.75 0 01-.75-.75zM6.166 5.106a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 101.061-1.06L6.166 5.106z"/>
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clip-rule="evenodd"/>
+            </svg>
+        </button>
+        <a href="https://github.com/freemankevin/SecurePassGen" class="github-link" target="_blank" rel="noopener noreferrer" title="访问GitHub项目">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- 底部GitHub链接（备选） -->
+    <div class="bottom-github">
+        <a href="https://github.com/freemankevin/SecurePassGen" class="github-link" target="_blank" rel="noopener noreferrer" title="Star on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+        </a>
+    </div>
+    
     <div class="bg-particles" id="bgParticles"></div>
     
     <div class="container fade-in-up">
@@ -727,6 +882,90 @@
     </div>
     
     <script>
+        // 主题管理器
+        class ThemeManager {
+            constructor() {
+                this.currentTheme = this.getStoredTheme() || 'light';
+                this.init();
+            }
+            
+            init() {
+                this.applyTheme(this.currentTheme);
+                this.bindEvents();
+                this.updateIcons();
+            }
+            
+            getStoredTheme() {
+                try {
+                    return JSON.parse(document.cookie).theme;
+                } catch {
+                    return null;
+                }
+            }
+            
+            storeTheme(theme) {
+                const expires = new Date();
+                expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1年
+                document.cookie = JSON.stringify({theme}) + '; expires=' + expires.toUTCString() + '; path=/';
+            }
+            
+            applyTheme(theme) {
+                document.body.setAttribute('data-theme', theme);
+                this.currentTheme = theme;
+                this.storeTheme(theme);
+                this.updateIcons();
+                this.updateParticles();
+            }
+            
+            toggleTheme() {
+                const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+                this.applyTheme(newTheme);
+                
+                // 添加切换动画效果
+                const themeToggle = document.getElementById('themeToggle');
+                themeToggle.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    themeToggle.style.transform = 'rotate(0deg)';
+                }, 500);
+            }
+            
+            updateIcons() {
+                const sunIcon = document.querySelector('.sun-icon');
+                const moonIcon = document.querySelector('.moon-icon');
+                
+                if (this.currentTheme === 'dark') {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                } else {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                }
+            }
+            
+            updateParticles() {
+                // 更新粒子颜色以适应主题
+                const particles = document.querySelectorAll('.particle');
+                particles.forEach(particle => {
+                    particle.style.background = getComputedStyle(document.documentElement)
+                        .getPropertyValue('--particle-color');
+                });
+            }
+            
+            bindEvents() {
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+                
+                // 键盘快捷键 Ctrl+Shift+T
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                        e.preventDefault();
+                        this.toggleTheme();
+                    }
+                });
+            }
+        }
+        
         // 背景粒子效果
         class BackgroundParticles {
             constructor() {
@@ -1035,7 +1274,7 @@
                 const historyList = document.getElementById('historyList');
                 
                 if (this.history.length === 0) {
-                    historyList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.6); font-style: italic;">暂无历史记录</div>';
+                    historyList.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-style: italic;">暂无历史记录</div>';
                     return;
                 }
                 
@@ -1113,6 +1352,7 @@
         }
         
         // 创建全局实例
+        const themeManager = new ThemeManager();
         const generator = new EnhancedPasswordGenerator();
         const firework = new FireworkEffect();
         const bgParticles = new BackgroundParticles();
@@ -1122,7 +1362,7 @@
             const passwordLength = parseInt(document.getElementById('passwordLength').value);
             
             if (passwordLength < 8 || passwordLength > 64) {
-                alert('密码长度必须在8-64位之间');
+                showNotification('密码长度必须在8-64位之间', 'error');
                 return;
             }
             
@@ -1157,7 +1397,7 @@
             const passwordLength = parseInt(document.getElementById('passwordLength').value);
             
             if (passwordLength < 8 || passwordLength > 64) {
-                alert('密码长度必须在8-64位之间');
+                showNotification('密码长度必须在8-64位之间', 'error');
                 return;
             }
             
@@ -1228,6 +1468,27 @@
             }, 3000);
         }
         
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `toast ${type}`;
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.top = '100px';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+        
         // 页面加载时生成一个默认的高强度密码
         window.onload = function() {
             // 确保默认是高强度密码
@@ -1280,6 +1541,75 @@
                 this.value = Math.min(Math.max(value, 8), 64);
             }
         });
+        
+        // GitHub链接点击追踪（可选）
+        document.querySelectorAll('.github-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // 这里可以添加点击追踪逻辑
+                console.log('GitHub link clicked');
+                
+                // 添加点击动画效果
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+        
+        // 优化移动端体验
+        if (window.innerWidth <= 768) {
+            // 移动端时可以选择显示底部GitHub链接
+            // document.querySelector('.bottom-github').style.display = 'block';
+            // document.querySelector('.top-toolbar .github-link').style.display = 'none';
+        }
+        
+        // 添加一些额外的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有按钮添加点击涟漪效果
+            document.querySelectorAll('.btn, .copy-btn, .history-copy').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+        
+        // 添加涟漪效果的CSS
+        const rippleCSS = `
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = rippleCSS;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
